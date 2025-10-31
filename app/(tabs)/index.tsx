@@ -10,7 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import * as LocalAuthentication from 'expo-local-authentication';
+//import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
@@ -69,43 +69,7 @@ export default function LoginScreen() {
     }
   };
 
-  // 🔹 Fingerprint login (voter only)
-  const handleFingerprintLogin = async () => {
-    if (!regnumber.trim()) {
-      Alert.alert('Missing Info', 'Please enter your regnumber first.');
-      return;
-    }
 
-    setLoading(true);
-    try {
-      const compatible = await LocalAuthentication.hasHardwareAsync();
-      const enrolled = await LocalAuthentication.isEnrolledAsync();
-
-      if (!compatible || !enrolled) {
-        Alert.alert('Unavailable', 'Fingerprint authentication not available.');
-        setLoading(false);
-        return;
-      }
-
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Authenticate to access voting system',
-      });
-
-      if (!result.success) {
-        Alert.alert('Authentication Failed', 'Fingerprint did not match.');
-        setLoading(false);
-        return;
-      }
-
-      // After successful biometric auth, perform voter login
-      await login();
-    } catch (error: any) {
-      console.error('Fingerprint login error:', error);
-      Alert.alert('Error', error.message || 'An unexpected error occurred.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <ThemedView style={styles.container}>
@@ -139,21 +103,6 @@ export default function LoginScreen() {
               <View style={styles.buttonContent}>
                 <MaterialCommunityIcons name="account" size={22} color="#fff" />
                 <ThemedText style={styles.buttonText}>Login</ThemedText>
-              </View>
-            )}
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.fingerprintButton]}
-            onPress={handleFingerprintLogin}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <View style={styles.buttonContent}>
-                <ThemedText style={styles.buttonText}>Fingerprint login</ThemedText>
-                <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" />
               </View>
             )}
           </TouchableOpacity>
