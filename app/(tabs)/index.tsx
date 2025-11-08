@@ -45,25 +45,43 @@ export default function LoginScreen() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/voter-login`, {
         method: 'POST',
-        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify({ regnumber }), // voter login
+        body: JSON.stringify({ regnumber }),
       });
 
-      const data = await response.json();
+      const raw = await response.text();
+      let data: Record<string, any> | null = null;
 
-      if (!response.ok) throw new Error(data.message || 'Login failed');
+      if (raw) {
+        try {
+          data = JSON.parse(raw);
+        } catch (parseError) {
+          console.warn('Failed to parse login response JSON.', parseError);
+        }
+      }
 
-      if (data.token) await saveToken(data.token);
+      if (!response.ok) {
+        const message =
+          data?.message ||
+          raw ||
+          `Login failed with status ${response.status}${response.statusText ? ` (${response.statusText})` : ''}`;
+        throw new Error(message);
+      }
 
-      Alert.alert('Login Successful', `Welcome, ${data?.regnumber || regnumber}`);
+      const token = data?.token;
+      if (typeof token === 'string' && token.trim()) {
+        await saveToken(token);
+      }
+
+      const displayName = data?.regnumber || regnumber;
+      Alert.alert('Login Successful', `Welcome, ${displayName}`);
       router.push('/home');
     } catch (error: any) {
       console.error('Login error:', error);
-      Alert.alert('Error', error.message || 'Unable to login. Please try again.');
+      Alert.alert('Error', error?.message || 'Unable to login. Please try again.');
     } finally {
       setLoading(false);
     }
