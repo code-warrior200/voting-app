@@ -231,7 +231,7 @@ export default function VoteScreen() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [authenticateWithBiometrics, currentCategory, currentPosition, getStoredToken, isLastCategory, selectedVotes, showAnimatedCheck]);
+  }, [currentCategory, isLastCategory, selectedVotes, showAnimatedCheck]);
 
   const handleSelect = useCallback(
     (id: string | number) => {
@@ -294,7 +294,7 @@ export default function VoteScreen() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [authenticateWithBiometrics, getStoredToken, selectedVotes, showAnimatedCheck]);
+  }, [selectedVotes, showAnimatedCheck]);
 
   const renderCandidate = useCallback(
     ({ item }: { item: Candidate }) => {
