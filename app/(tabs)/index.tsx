@@ -22,7 +22,7 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const API_BASE_URL =
-    process.env.EXPO_PUBLIC_API_URL || 'https://fue-vote-backend-1.onrender.com';
+    process.env.EXPO_PUBLIC_API_URL || 'https://fue-vote-backend.onrender.com/';
 
   // ✅ Securely store token
   const saveToken = async (token: string) => {

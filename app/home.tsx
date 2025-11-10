@@ -37,7 +37,7 @@ type VotePayload = {
   candidateId: string | number;
 };
 
-const API_BASE = 'https://fue-vote-backend-1.onrender.com'; // <-- change if needed
+const API_BASE = 'https://fue-vote-backend.onrender.com/'; // <-- change if needed
 
 const extractErrorMessage = (error: unknown, fallback: string) => {
   if (error instanceof Error && error.message) {
