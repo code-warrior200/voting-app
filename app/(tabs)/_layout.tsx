@@ -18,8 +18,6 @@ export default function RootLayout() {
     >
       {/* Define screens in the navigation flow */}
       <Stack.Screen name="index" /> {/* Login Screen */}
-      <Stack.Screen name="home" />  {/* Election Dashboard */}
-      <Stack.Screen name="vote" />  {/* Voting Screen */}
     </Stack>
   );
 }

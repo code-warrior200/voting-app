@@ -22,7 +22,7 @@ export default function LoginScreen() {
   const router = useRouter();
 
   const API_BASE_URL =
-    process.env.EXPO_PUBLIC_API_URL || 'https://fue-vote-backend.onrender.com/';
+    process.env.EXPO_PUBLIC_API_URL || 'https://fue-vote-backend.onrender.com';
 
   // ✅ Securely store token
   const saveToken = async (token: string) => {
@@ -34,57 +34,42 @@ export default function LoginScreen() {
   };
 
   // 🔹 Login handler (voter only)
-  const login = async () => {
-    if (!regnumber.trim()) {
-      Alert.alert('Missing Info', 'Please enter your regnumber.');
-      return;
+const login = async () => {
+  if (!regnumber.trim()) {
+    Alert.alert('Missing Info', 'Please enter your regnumber.');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/voter-login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ regnumber }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data?.message || 'Invalid registration number');
     }
 
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/voter-login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ regnumber }),
-      });
-
-      const raw = await response.text();
-      let data: Record<string, any> | null = null;
-
-      if (raw) {
-        try {
-          data = JSON.parse(raw);
-        } catch (parseError) {
-          console.warn('Failed to parse login response JSON.', parseError);
-        }
-      }
-
-      if (!response.ok) {
-        const message =
-          data?.message ||
-          raw ||
-          `Login failed with status ${response.status}${response.statusText ? ` (${response.statusText})` : ''}`;
-        throw new Error(message);
-      }
-
-      const token = data?.token;
-      if (typeof token === 'string' && token.trim()) {
-        await saveToken(token);
-      }
-
-      const displayName = data?.regnumber || regnumber;
-      Alert.alert('Login Successful', `Welcome, ${displayName}`);
-      router.push('/home');
-    } catch (error: any) {
-      console.error('Login error:', error);
-      Alert.alert('Error', error?.message || 'Unable to login. Please try again.');
-    } finally {
-      setLoading(false);
+    if (data?.token) {
+      await saveToken(data.token);
     }
-  };
+
+    Alert.alert('Login Successful', `Welcome, ${data?.regnumber || regnumber}`);
+    router.push('/home');
+  } catch (error: any) {
+    Alert.alert('Error', error.message || 'Login failed');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
 

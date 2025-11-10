@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/rules-of-hooks */
 // app/vote.tsx
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
@@ -38,7 +37,7 @@ type VotePayload = {
   candidateId: string | number;
 };
 
-const API_BASE = 'https://fue-vote-backend.onrender.com/'; // <-- change if needed
+const API_BASE = 'https://fue-vote-backend.onrender.com'; // <-- change if needed
 
 const extractErrorMessage = (error: unknown, fallback: string) => {
   if (error instanceof Error && error.message) {
@@ -155,35 +154,6 @@ export default function VoteScreen() {
     },
     [fadeAnim]
   );
-
-  if (loading) {
-    return (
-      <ThemedView style={styles.centered}>
-        <ActivityIndicator size="large" color="#00aa55" />
-        <ThemedText style={{ marginTop: 10 }}>Loading candidates...</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  if (error) {
-    return (
-      <ThemedView style={styles.centered}>
-        <Ionicons name="alert-circle" size={50} color="red" />
-        <ThemedText style={{ marginTop: 10, color: 'red' }}>
-          Failed to load candidates: {error}
-        </ThemedText>
-      </ThemedView>
-    );
-  }
-
-  if (!currentCategory) {
-    // Defensive: in case candidatesData is empty or index out of range
-    return (
-      <ThemedView style={styles.centered}>
-        <ThemedText>No candidates available.</ThemedText>
-      </ThemedView>
-    );
-  }
 
   // Cast vote for a single category (requires biometric)
   const handleVote = useCallback(async () => {
@@ -335,6 +305,35 @@ export default function VoteScreen() {
     },
     [currentPosition]
   );
+
+  if (loading) {
+    return (
+      <ThemedView style={styles.centered}>
+        <ActivityIndicator size="large" color="#00aa55" />
+        <ThemedText style={{ marginTop: 10 }}>Loading candidates...</ThemedText>
+      </ThemedView>
+    );
+  }
+
+  if (error) {
+    return (
+      <ThemedView style={styles.centered}>
+        <Ionicons name="alert-circle" size={50} color="red" />
+        <ThemedText style={{ marginTop: 10, color: 'red' }}>
+          Failed to load candidates: {error}
+        </ThemedText>
+      </ThemedView>
+    );
+  }
+
+  if (!currentCategory) {
+    // Defensive: in case candidatesData is empty or index out of range
+    return (
+      <ThemedView style={styles.centered}>
+        <ThemedText>No candidates available.</ThemedText>
+      </ThemedView>
+    );
+  }
 
   if (showSummary) {
     return (
