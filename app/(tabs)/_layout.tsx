@@ -3,7 +3,7 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export default function RootLayout() {
+export default function TabsLayout() {
   // You can still detect color scheme if needed
   const colorScheme = useColorScheme();
 
