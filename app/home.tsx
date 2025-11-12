@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // app/vote.tsx
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
@@ -135,7 +136,6 @@ export default function VoteScreen() {
   const currentCategory = candidatesData[currentIndex];
   const currentPosition = currentCategory?.position ?? '';
 
-  // Helper to show check animation (returns a promise you can await)
   const showAnimatedCheck = useCallback(
     async (message: string, displayDuration = 1500) => {
       setOverlayMessage(message);
@@ -155,7 +155,6 @@ export default function VoteScreen() {
     [fadeAnim]
   );
 
-  // Cast vote for a single category (requires biometric)
   const handleVote = useCallback(async () => {
     if (!currentCategory) return;
 
@@ -214,7 +213,6 @@ export default function VoteScreen() {
     [currentCategory]
   );
 
-  // Final submission: biometrics + POST to /api/vote
   const handleFinalSubmit = useCallback(async () => {
     try {
       await authenticateWithBiometrics('Authenticate to submit your votes');
@@ -327,7 +325,6 @@ export default function VoteScreen() {
   }
 
   if (!currentCategory) {
-    // Defensive: in case candidatesData is empty or index out of range
     return (
       <ThemedView style={styles.centered}>
         <ThemedText>No candidates available.</ThemedText>
@@ -358,26 +355,39 @@ export default function VoteScreen() {
                     </View>
                   </View>
                 ) : (
-                  <ThemedText style={{ color: '#999', marginTop: 8 }}>No candidate selected</ThemedText>
+                  <ThemedText style={{ color: '#999', marginTop: 8 }}>
+                    No candidate selected
+                  </ThemedText>
                 )}
               </View>
             );
           })}
         </ScrollView>
 
+        {/* ✅ Logout button */}
         <TouchableOpacity
-          style={[styles.voteButton, { backgroundColor: isSubmitting ? '#ccc' : '#00aa55' }]}
-          onPress={handleFinalSubmit}
-          disabled={isSubmitting}
+          style={styles.logoutButton}
+          onPress={async () => {
+            Alert.alert('Logout', 'Are you sure you want to log out?', [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Logout',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    await AsyncStorage.clear();
+                    await SecureStore.deleteItemAsync('jwt_token');
+                    router.replace('/');
+                  } catch (err) {
+                    console.error('Logout error:', err);
+                    Alert.alert('Logout Failed', 'Unable to log out. Please try again.');
+                  }
+                },
+              },
+            ]);
+          }}
         >
-          {isSubmitting ? (
-            <View style={{ alignItems: 'center' }}>
-              <ActivityIndicator size="small" color="#fff" />
-              <ThemedText style={[styles.voteText, { marginTop: 6 }]}>Submitting votes...</ThemedText>
-            </View>
-          ) : (
-            <ThemedText style={styles.voteText}>Submit Votes</ThemedText>
-          )}
+          <ThemedText style={styles.logoutText}>Logout</ThemedText>
         </TouchableOpacity>
 
         {showCheck && (
@@ -498,4 +508,13 @@ const styles = StyleSheet.create({
   summaryRow: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
   positionText: { fontSize: 16, fontWeight: '700', color: '#00aa55' },
   summaryAvatar: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
+  logoutButton: {
+    backgroundColor: '#ff4444',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 16,
+    marginBottom: 30,
+  },
+  logoutText: { color: '#fff', fontWeight: '700', fontSize: 16 },
 });
