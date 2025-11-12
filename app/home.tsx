@@ -376,7 +376,7 @@ export default function VoteScreen() {
               <ThemedText style={[styles.voteText, { marginTop: 6 }]}>Submitting votes...</ThemedText>
             </View>
           ) : (
-            <ThemedText style={styles.voteText}>Submit All Votes</ThemedText>
+            <ThemedText style={styles.voteText}>Submit Votes</ThemedText>
           )}
         </TouchableOpacity>
 
